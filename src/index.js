@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const cors = require('cors');
 const path = require('path');
+const db = require('./db/db')
 const routes = require('./routers/routes');//Importa as rotas
 const corsOptions = {
     origen: ['http://localhost:3333','https://meudominio.com'],//Lista de origens permitidas
