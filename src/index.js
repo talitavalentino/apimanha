@@ -7,6 +7,7 @@ const cors = require('cors');
 const path = require('path');
 const db = require('./db/db')
 const routes = require('./routers/routes');//Importa as rotas
+const clienteRoutes = require('./routers/clientesroutes');
 const corsOptions = {
     origen: ['http://localhost:3333','https://meudominio.com'],//Lista de origens permitidas
     methods: 'GET,POST,PUT,PATH,DELETE',//metodos HTTP permitidas
@@ -29,6 +30,7 @@ app.get('/',(req, res) => {
 //configuração de rotas
 //APÓS DECLARAR NOSSAS ROTAS, AQUI FALAMOS PARA NOSSO APP USAR ELAS COMO REFERENCIA
 app.use('/',routes);
+app.use('/',clienteRoutes);
 //Middleware de tratamento de erros
 app.use((err, req, res, next) => {
 console.error(err.stack);
@@ -40,3 +42,4 @@ const PORT = process.env.PORT || 3333;
 app.listen(PORT,() => {
     console.log(`Servidor rolando na porta ${PORT}`)
 });
+

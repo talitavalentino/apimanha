@@ -1,4 +1,4 @@
-const db = require('../db'); //Módulo de conexão com o banco de dados
+const db = require('../db/db'); //Módulo de conexão com o banco de dados
 const Joi = require('joi');//Biblioteca de validação de dados
 const bcrypt = require('bcrypt');//Para encriptação de senhas
 //Validação de senha Joi
@@ -36,11 +36,11 @@ exports.listarClienteCpf = async(req,res) => {
     const {cpf} = req.params;
     try { 
         const [results] = await db.query('Select * FROM cliente WHERE cpf = ?',[cpf]);
-        if (result.length === 0){
+        if (results.length === 0){
             return res.status(404).json({error: 'Cliente não encontrado'
             });
         }
-        res.json(result[0]);
+        res.json(results[0]);
     } catch (err){
         console.error('Erro ao buscar cliente:',err);
         res.status(500).json({error:'Erro interno do servidor'});
@@ -71,4 +71,46 @@ try {
     console.error('Erro ao adicionar cliente:', err);
     res.status(500).json({ error: 'Erro ao adicionar cliente'});
 }
+};
+
+//Atualizar um cliente
+exports.atualizarCliente = async (req, res) => {
+    const { cpf } = req.params;
+    const {nome, endereço, bairro, cep, telefone, email,senha} = req.body;
+    //Validação de dados
+    const { error } = clienteSchema.validate({cpf, nome, endereço, bairro, cep, telefone, email, senha});
+    if (error){
+        return res.status(400).json({error: error.details[0].message});
+    }
+    try {
+        //verifica se o cliente existe antes de atualizar
+        const [result] = await db.query('SELECT * FROM cliente WHERE cpf = ?',[cpf]);
+        if(result.length ===0){
+            return res.status(404).json({error: 'Cliente não encontrado'});
+        }
+        //Criptografando a senha
+        const hash = await bcrypt.hash(senha,10);
+        const clienteAtualizado = { nome,endereço, bairro, cep, telefone, email, senha: hash};
+        await db.query('UPDATE cliente SET ? WHERE cpf = ?',[clienteAtualizado, cpf]);
+        res.json({ message: 'Cliente atualizado com sucesso'});
+    } catch (err){
+        console.error('Erro ao atualizar cliente', err);
+        res.status(500).json({error: 'Erro ao atualizar cliente'});
+    }
+   };
+   exports.deletarCliente = async (req, res) => {
+    const { cpf } = req.params;
+    try{
+        //verifica se o cliente existe antes de deletar
+        const [result] = await db.query('SELECT * FROM cliente WHERE cpf = ?', [cpf]);
+        if (result.length ===0){
+            return res.status(404).json({ error: 'cliente não encontrado'});
+        }
+        await db.query('SELECT FROM cliente WHERE cpf = ?',[cpf]);
+        res.json({ message: 'Cliente deletado com sucesso'});
+} catch (err){
+    console.error('Erro ao deletar cliente:', err);
+    res.satuts(500).json({error: 'Erro ao deletar cliente'});
 }
+   };
+  
