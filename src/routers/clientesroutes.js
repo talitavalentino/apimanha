@@ -12,7 +12,7 @@ router.get('/clientes/:cpf', clienteController.listarClienteCpf);
 router.post('/clientes', clienteController.adicionarCliente);
 
 //Rota para atualizar um cliente por CPF
-router.put('clintes/:cpf', clienteController.atualizarCliente);
+router.put('clientes/:cpf', clienteController.atualizarCliente);
 
 //Rota para deletar um cliente por CPF
 router.delete('/clientes/:cpf',clienteController.deletarCliente);
