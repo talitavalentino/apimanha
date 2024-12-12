@@ -106,7 +106,7 @@ exports.atualizarCliente = async (req, res) => {
         if (result.length ===0){
             return res.status(404).json({ error: 'cliente não encontrado'});
         }
-        await db.query('SELECT FROM cliente WHERE cpf = ?',[cpf]);
+        await db.query('SELECT * FROM cliente WHERE cpf = ?',[cpf]);
         res.json({ message: 'Cliente deletado com sucesso'});
 } catch (err){
     console.error('Erro ao deletar cliente:', err);
