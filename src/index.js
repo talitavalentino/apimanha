@@ -1,45 +1,60 @@
-//IMPORTAÇÃO DE TODAS AS DEPENDENCIAS
-require (`dotenv`).config();//Carrega variaveis de ambiente de um arquivo .env
+// IPORATAÇÃO DE TODAS AS DEPENDÊNCIAS
+require('dotenv').config(); //Carrega variáveis de ambiente de um arquivo .env
+
 const express = require('express');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cors = require('cors');
 const path = require('path');
-const db = require('./db/db')
-const routes = require('./routers/routes');//Importa as rotas
-const clienteRoutes = require('./routers/clientesroutes');
+const db = require('./db/db') 
+
+const routes = require('./routes/routes'); // Importa as rotas
+const clienteRoutes = require('./routes/clienteroutes');
+const itempedidoRoutes = require('./routes/itempedidoroutes');
+const produtoRoutes = require('./routes/produtoroutes');
+const entregadoroutes = require('./routes/entregadoroutes');
+const pedidoRoutes = require('./routes/pedidoroutes');
 const corsOptions = {
-    origen: ['http://localhost:3333','https://meudominio.com'],//Lista de origens permitidas
-    methods: 'GET,POST,PUT,PATH,DELETE',//metodos HTTP permitidas
-    credentials: true, //Permite o envio de cookies
+    origin: ['http://localhost:3333', 'https://meudominio.com'], //lista de origens permitidas
+    methods: 'GET, POST, PUT, PATCH, DELETE', //Metodos http permitidos
+    credentials: true, //permite o envio de cookies
 };
 const app = express();
-//O APP IRÁ RECEBER O EXPRESS E TODAS SUAS DEPENDENCIAS
-//Middlewares de segurança e utilidades
-app.use(helmet()); //Protege a aplicação com headers de segurança
-app.use(cors(corsOptions));;//Habilita o CORS
-app.use(morgan('dev')); //Loga as requisiçoes no console
-app.use(express.json());//Converta os dados recebidos para JSON
-//Servindo arquivos estáticos
-app.use(express.static(path.join(__dirname,'public'))); //Pasta de arquivos estáticos
-//O path retorna o caminho de forma dinamica
-//Rota para servir o home.html como sendo nossa página principal
-app.get('/',(req, res) => {
-    res.sendFile(path.join(__dirname,'pages', 'home.html'));
-})
-//configuração de rotas
-//APÓS DECLARAR NOSSAS ROTAS, AQUI FALAMOS PARA NOSSO APP USAR ELAS COMO REFERENCIA
-app.use('/',routes);
-app.use('/',clienteRoutes);
-//Middleware de tratamento de erros
-app.use((err, req, res, next) => {
-console.error(err.stack);
-res.status(500).send('algo deu errado');
-});
-//Inicialização do servidor
-//Aqui definimos quem irá escutar nosso chamado e nos responder
-const PORT = process.env.PORT || 3333;
-app.listen(PORT,() => {
-    console.log(`Servidor rolando na porta ${PORT}`)
+// O app irá receber o express e todas suas dependencias
+// Middlewares de segurança e utilidades
+app.use(helmet()); // Protege a aplicação com headers de segurança
+app.use(cors(corsOptions)); // Habilita o CORS
+app.use(morgan('dev')); // Loga as requisições no console
+app.use(express.json()); //converte os dados recebidos para JASON
+
+// Servindo arquivos estaticos
+app.use(express.static(path.join(__dirname, 'public'))); //Pasta de arquivos estaticos
+// O PATH RETORNA O CAMINHO DE FORMA DINAMICA
+
+// Rota para servir o home.html como sendo nossa pagina principal
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages', 'home.html'))
 });
 
+// configuração de rotas
+//Apos declarar nossa rotas,qui falamos para nosso app usar elas como referencia
+app.use('/', routes);
+app.use('/', clienteRoutes);
+app.use('/', produtoRoutes);
+app.use('/', entregadoroutes);
+app.use('/', pedidoRoutes);
+app.use('/', itempedidoRoutes);
+
+
+// Middleware de tratamento de erros
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Algo de errado!');
+});    
+
+//Inicialização do servidor
+// AQUI DEFINIMOS QUEM IRÁ ESCUTAR NOSSO CHAMADO E NOS RESPONDER
+const PORT = process.env.PORT || 3333;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
